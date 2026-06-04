@@ -1,10 +1,16 @@
-import React from 'react'
+import Header from './components/Header/Header'
+import Footer from './components/footer/Footer'
+import { Outlet } from 'react-router-dom'
 
-const App = () => {
+
+function App() {
   return (
-    <div>
-      App
-      <p className='text-3xl font-bold bg-green-500'>Hello, Tailwind</p>
+    <div className="min-h-screen flex flex-col bg-slate-50">
+        <Header />
+        <main className='flex-1'>
+          <Outlet />
+        </main>
+        <Footer />
     </div>
   )
 }
