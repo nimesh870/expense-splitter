@@ -73,20 +73,21 @@ function Home() {
 
         {/* Quick Actions */}
         <div className="flex flex-wrap items-center gap-3 mb-10">
-          <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-[#E2E8F0] cursor-pointer rounded-xl gap-2 h-10 px-5 font-semibold">
+          <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5 hover:text-white cursor-pointer
+           rounded-xl gap-2 h-10 px-5 font-semibold">
             <Plus className="size-4" />
             Add Expense
           </Button>
           <Button
             variant="outline"
-            className="border-white/10 text-[#F8FAFC] hover:bg-white/5 hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
+            className="border-white/10 text-black hover:bg-white/5 hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
           >
             <Users className="size-4" />
             Create Group
           </Button>
           <Button
             variant="outline"
-            className="border-white/10 text-[#F8FAFC] hover:bg-white/5 hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
+            className="border-white/10 text-black hover:bg-white/5 hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
           >
             <Wallet className="size-4" />
             Settle Up

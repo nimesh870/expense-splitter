@@ -29,7 +29,7 @@ export default function History() {
           </div>
           <Button
             variant="outline"
-            className="border-white/10 text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 cursor-pointer rounded-xl gap-2 h-9 px-4 self-start"
+            className="border-white/10 text-black hover:text-[#F8FAFC] hover:bg-white/5 cursor-pointer rounded-xl gap-2 h-9 px-4 self-start"
           >
             <Filter className="size-4" />
             Filter

@@ -28,13 +28,16 @@ export default function GroupDetails() {
 
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-3 mb-8">
-          <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-[#E2E8F0] cursor-pointer rounded-xl gap-2 h-10 px-5 font-semibold">
+          <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5
+           hover:text-white cursor-pointer rounded-xl gap-2 h-10 px-5 font-semibold">
             <Plus className="size-4" />
             Add Expense
           </Button>
+
           <Button
             variant="outline"
-            className="border-white/10 text-[#F8FAFC] hover:bg-white/5 cursor-pointer rounded-xl gap-2 h-10 px-5"
+            className="border-white/10 text-black hover:bg-white/5
+             hover:text-white cursor-pointer rounded-xl gap-2 h-10 px-5"
           >
             <DollarSign className="size-4" />
             Settle Up
