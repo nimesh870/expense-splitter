@@ -32,7 +32,7 @@ export const logout = async () => {
 }
 
 // Get Current User
-export const getCurrentUser = async () => {
+export const getUser = async () => {
     const {data : {user} , error} = await supabase.auth.getUser();
 
     if (error) throw error;
@@ -47,8 +47,7 @@ export const getCurrentSession = async () => {
     return session;
 }
 
-// Listen to auth state changes
-
+// Listen to auth state changes like : loggedIn , loggedOut
 export const onAuthStateChange = (callback) => {
     return supabase.auth.onAuthStateChange((_event , session) => {
         callback(session)
