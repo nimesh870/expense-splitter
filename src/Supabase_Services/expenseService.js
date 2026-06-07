@@ -1,6 +1,6 @@
 import { supabase } from "../supabase";
 
-// adding and splitting expense together
+// creating and splitting expense together
 export const addExpense = async ({groupId, description, amount, paidBy, splitType, splits}) => {
     // creating expense
     const {data : expense , error : expenseError} = await supabase

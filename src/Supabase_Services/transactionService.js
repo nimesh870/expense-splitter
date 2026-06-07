@@ -19,7 +19,7 @@ export const createTransaction = async ({groupId, fromUser, toUser, amount}) => 
 }
 
 // get all transactions from a group
-export const getAllTransactions = async ({groupId}) => {
+export const getAllTransactions = async (groupId) => {
     const {data , error} = await supabase
         .from('transactions')
         .select(`*,

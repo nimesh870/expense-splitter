@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-// ─── Navigation data ─────────────────────────────────────────────
+// nav data
 const navItems = [
   { label: 'Home', path: '/' },
   { label: 'Groups', path: '/groups' },
@@ -15,7 +15,6 @@ const authItems = [
   { label: 'Sign up', path: '/signup' },
 ]
 
-// ─── Shared style helpers ────────────────────────────────────────
 function navLinkClass({ isActive }) {
   const base = 'px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200'
   if (isActive) return `${base} bg-white/10 text-[#F8FAFC]`
@@ -28,7 +27,7 @@ function mobileNavLinkClass({ isActive }) {
   return `${base} text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5`
 }
 
-// ─── Component ───────────────────────────────────────────────────
+// Component
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
 
