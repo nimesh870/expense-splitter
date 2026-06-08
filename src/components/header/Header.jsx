@@ -2,18 +2,10 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
-// nav data
-const navItems = [
-  { label: 'Home', path: '/' },
-  { label: 'Groups', path: '/groups' },
-  { label: 'History', path: '/history' },
-]
-
-const authItems = [
-  { label: 'Login', path: '/login' },
-  { label: 'Sign up', path: '/signup' },
-]
+import LogoutBtn from './Logout'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import Container from '../container/Container'
 
 function navLinkClass({ isActive }) {
   const base = 'px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200'
@@ -30,12 +22,22 @@ function mobileNavLinkClass({ isActive }) {
 // Component
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-
   const closeMenu = () => setMenuOpen(false)
+  const navigate = useNavigate()
+  const authStatus = useSelector(state => state.auth.status)
+
+  const navItems = [
+    { name : 'Home' , path : '/home' , active : true },
+    { name : 'Groups' , path : '/group' , active : authStatus },
+    { name : 'History' , path :'/history' , active : authStatus },
+    { name : 'login' , path : '/login' , active : !authStatus },
+    { name : 'signup' , path : '/signup' , active : !authStatus },
+  ]
 
   return (
     <header className="bg-[#0F172A] sticky top-0 z-50 border-b border-white/10">
-      <div className="max-w-6xl mx-auto px-6 py-4">
+      <Container>
+        <div className="max-w-6xl mx-auto px-6 py-4">
 
         {/* ── Top bar: brand + desktop nav + auth + hamburger ── */}
         <nav className="flex items-center justify-between">
@@ -50,27 +52,21 @@ export default function Header() {
 
           {/* Desktop navigation links */}
           <ul className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
+            {navItems.map((item) => item.active ? (
               <li key={item.path}>
                 <NavLink to={item.path} className={navLinkClass}>
-                  {item.label}
+                  {item.name}
                 </NavLink>
               </li>
-            ))}
+            ) : null 
+            )}
           </ul>
+          {
+            authStatus && (
+              <div className='ml-2'> <LogoutBtn /> </div>
+            )
+          }
 
-          {/* Desktop auth buttons */}
-          <div className="hidden md:flex items-center gap-2">
-            <Link
-              to="/login"
-              className="px-4 py-2 text-sm font-medium text-[#94A3B8] hover:text-[#F8FAFC] transition-colors"
-            >
-              Login
-            </Link>
-            <Button asChild>
-              <Link to="/signup">Sign up</Link>
-            </Button>
-          </div>
 
           {/* Mobile hamburger / close button */}
           <button
@@ -85,37 +81,27 @@ export default function Header() {
         {/* ── Mobile dropdown menu ── */}
         {menuOpen && (
           <div className="md:hidden border-t border-white/10 mt-4 pt-4 pb-2 flex flex-col gap-1">
-            {navItems.map((item) => (
+            {navItems.map((item) => item.active ? (
               <NavLink
                 key={item.path}
                 to={item.path}
                 onClick={closeMenu}
                 className={mobileNavLinkClass}
               >
-                {item.label}
+                {item.name}
               </NavLink>
-            ))}
-
-            <div className="border-t border-white/10 mt-3 pt-3 flex flex-col gap-1">
-              <Link
-                to="/login"
-                onClick={closeMenu}
-                className="px-4 py-2 text-sm font-medium text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 rounded-xl transition-all"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                onClick={closeMenu}
-                className="px-4 py-2 text-sm font-medium text-[#F8FAFC] hover:bg-white/10 rounded-xl transition-all"
-              >
-                Sign up
-              </Link>
-            </div>
+            ) : null
+          )}
+            {
+              authStatus && (
+                <div className='ml-2'> <LogoutBtn /> </div>
+              )
+            }
           </div>
-        )}
+          )}
 
-      </div>
+        </div>
+      </Container>
     </header>
   )
 }
