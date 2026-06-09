@@ -8,8 +8,46 @@ import {
   Receipt,
   TrendingUp,
 } from "lucide-react"
+import { useSelector } from "react-redux"
+import { Lock } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
 
 function Home() {
+  const authStatus = useSelector(state => state.auth.status)
+  if (authStatus === false) {
+    return (
+    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4">
+      <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10 flex flex-col items-center text-center max-w-sm w-full">
+
+        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-6">
+          <Lock className="size-8 text-[#94A3B8]" />
+        </div>
+
+        <h2 className="text-[#F8FAFC] text-xl font-bold mb-2">
+          Login Required
+        </h2>
+        <p className="text-[#94A3B8] text-sm mb-8">
+          You need to be logged in to view this page
+        </p>
+
+        <div className="flex flex-col gap-3 w-full">
+          <Link to="/login" className="w-full">
+            <Button className="w-full bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5 hover:text-white rounded-xl font-semibold h-10">
+              Login
+            </Button>
+          </Link>
+          <Link to="/signup" className="w-full">
+            <Button variant="outline" className="w-full border-white/10 text-black hover:bg-white/5 hover:text-white rounded-xl h-10">
+              Create Account
+            </Button>
+          </Link>
+        </div>
+
+      </div>
+    </div>
+  )
+  }
   return (
     <div className="min-h-screen bg-[#0F172A]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
