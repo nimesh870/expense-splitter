@@ -1,10 +1,39 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, Navigate, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Eye, EyeOff, LogIn } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { login as loginAction } from '../features/authSlice'
+import { login as loginService } from '../Supabase_Services/Authentication'
+import { useDispatch } from "react-redux"
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
+  const { register , handleSubmit } = useForm()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+
+  const login = async (data) => {
+    setLoading(true)
+    try {
+      const result = await loginService({
+        email : data.email,
+        password : data.password
+      })
+
+      dispatch(loginAction({
+        userData : result.user,
+        token : result.session.user_token
+      }))
+      navigate('/')
+      
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4 py-12">
@@ -20,7 +49,7 @@ export default function Login() {
 
         {/* Form Card */}
         <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-6 sm:p-8">
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-5" onSubmit={handleSubmit(login)}>
 
             {/* Email */}
             <div className="space-y-1.5">
@@ -29,6 +58,15 @@ export default function Login() {
                 type="email"
                 placeholder="you@example.com"
                 className="w-full h-10 px-3.5 rounded-xl bg-[#0F172A] border border-white/10 text-[#F8FAFC] text-sm placeholder:text-[#64748B] focus:outline-none focus:border-white/20 transition-colors"
+                {
+                  ...register('email' , {
+                    required : 'Email is required',
+                    validate : {
+                      matchPattern : (value) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/.test(value)
+                      || "Enter a valid email address"
+                    }
+                  })
+                }
               />
             </div>
 
@@ -39,7 +77,15 @@ export default function Login() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className="w-full h-10 pl-3.5 pr-10 rounded-xl bg-[#0F172A] border border-white/10 text-[#F8FAFC] text-sm placeholder:text-[#64748B] focus:outline-none focus:border-white/20 transition-colors"
+                  className="w-full h-10 pl-3.5 pr-10 rounded-xl bg-[#0F172A] border
+                   border-white/10 text-[#F8FAFC] text-sm placeholder:text-[#64748B]
+                    focus:outline-none focus:border-white/20 transition-colors"
+                  {
+                    ...register('password' , {
+                      required : 'Password is required',
+                      minLength : 8
+                    })
+                  }
                 />
                 <button
                   type="button"
@@ -62,9 +108,13 @@ export default function Login() {
             </div>
 
             {/* Submit */}
-            <Button className="w-full bg-[#F8FAFC] text-[#0F172A] hover:bg-[#E2E8F0] cursor-pointer rounded-xl h-10 gap-2 font-semibold">
+            <Button
+              type = 'submit'
+              disabled = {loading}
+             className="w-full bg-[#F8FAFC] text-[#0F172A] hover:bg-[#E2E8F0]
+              cursor-pointer rounded-xl h-10 gap-2 font-semibold">
               <LogIn className="size-4" />
-              Sign In
+              {loading ? "signing in...." : 'Sign In'}
             </Button>
           </form>
         </div>
