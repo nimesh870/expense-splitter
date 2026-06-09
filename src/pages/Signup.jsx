@@ -10,12 +10,12 @@ import { login } from '../features/authSlice'
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const { register , handleSubmit } = useForm()
+  const { register , handleSubmit , formState : {errors} , getValues } = useForm()
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const signup = async (data) => {
+  const signupHandler = async (data) => {
     setLoading(true)
     try {
       const result = await signupService({
@@ -53,7 +53,7 @@ export default function Signup() {
 
         {/* form Card */}
         <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-6 sm:p-8">
-          <form className="space-y-5" onSubmit={handleSubmit(signup)}>
+          <form className="space-y-5" onSubmit={handleSubmit(signupHandler)}>
 
             {/* name */}
             <div className="space-y-1.5">
