@@ -37,6 +37,7 @@ function Home() {
               Login
             </Button>
           </Link>
+
           <Link to="/signup" className="w-full">
             <Button variant="outline" className="w-full border-white/10 text-black hover:bg-white/5 hover:text-white rounded-xl h-10">
               Create Account
@@ -114,15 +115,19 @@ function Home() {
           <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5 hover:text-white cursor-pointer
            rounded-xl gap-2 h-10 px-5 font-semibold">
             <Plus className="size-4" />
-            Add Expense
+            <Link to='/add-expense'>
+              Add Expense
+            </Link>
           </Button>
+          
           <Button
             variant="outline"
             className="border-white/10 text-black hover:bg-white/5 hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
           >
-            <Users className="size-4" />
+          <Users className="size-4" />
             Create Group
           </Button>
+
           <Button
             variant="outline"
             className="border-white/10 text-black hover:bg-white/5 hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
