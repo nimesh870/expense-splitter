@@ -11,18 +11,55 @@ import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
 import { store } from './store/store.js'
+import AuthLayout from './components/AuthLayout.jsx'
+import { Link } from 'react-router-dom'
 
 const router = createBrowserRouter([
   {
     path : '/',
     element : <App />,
+     errorElement: (
+      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-[#F8FAFC] text-4xl font-bold mb-4">404</h1>
+          <p className="text-[#94A3B8] mb-6">Page not found</p>
+          <Link to="/" className="text-[#F8FAFC] underline">Go home</Link>
+        </div>
+      </div>
+     ),
+
     children : [
-      {index : true , element : <Home />},
-      {path : 'login' , element : <Login />},
-      {path : 'signup' , element : <Signup />},
-      {path : 'groups' , element : <GroupDetails />},
-      {path : 'add-expense' , element : <AddExpense />},
-      {path : 'history' , element : <History />}
+      {path : '/' , element : <Home />},
+
+      {path : 'login' , element : ( 
+        <AuthLayout authentication = {false}>
+          <Login />
+        </AuthLayout>
+       )},
+
+      {path : 'signup' , element : (
+        <AuthLayout authentication = {false}>
+          <Signup />
+        </AuthLayout>
+      )},
+
+      {path : 'groups' , element : (
+        <AuthLayout authentication>
+          <GroupDetails />
+        </AuthLayout>
+      )},
+
+      {path : 'add-expense' , element : (
+        <AuthLayout authentication>
+          <AddExpense />
+        </AuthLayout>
+      )},
+
+      {path : 'history' , element : (
+        <AuthLayout authentication>
+          <History />
+        </AuthLayout>
+      )}
     ]
   }
 ])

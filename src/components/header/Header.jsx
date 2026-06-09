@@ -27,8 +27,9 @@ export default function Header() {
   const authStatus = useSelector(state => state.auth.status)
 
   const navItems = [
-    { name : 'Home' , path : '/home' , active : true },
+    { name : 'Home' , path : '/' , active : true },
     { name : 'Groups' , path : '/group' , active : authStatus },
+    { name : 'Expense' , path : '/expense' , active : authStatus },
     { name : 'History' , path :'/history' , active : authStatus },
     { name : 'login' , path : '/login' , active : !authStatus },
     { name : 'signup' , path : '/signup' , active : !authStatus },

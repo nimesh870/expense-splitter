@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase } from '../supabase'
 
 // signUp
 export const signup = async ({email , password , name}) => {
