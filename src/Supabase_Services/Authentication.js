@@ -11,6 +11,16 @@ export const signup = async ({email , password , name}) => {
     })
 
     if (error) throw error;
+    
+    // insert into public.users
+    const { error : userError } =  await supabase.from('users').insert({
+        id : data.user.id,
+        name,
+        email
+    })
+
+    if (userError) throw userError
+
     return data;
 }
 

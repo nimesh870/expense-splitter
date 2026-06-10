@@ -36,7 +36,7 @@ export const getGroupById = async (groupId) => {
     .from('groups')
     .select(`
       *,
-      group_members(
+      group_members!inner(
         user_id,
         users(id, name, email)
       )
@@ -50,18 +50,23 @@ export const getGroupById = async (groupId) => {
 
 // get all groups of current user
 export const getGroups = async () => {
-    const { data : {user} } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    const { data , error } = await supabase
-        .from("groups")
-        .select(`*,
-            group_members(
-            user_id,
-            users(id , name , email))`)
-        .eq('group_members.user_id' , user.id)
+    const { data, error } = await supabase
+        .from('group_members')
+        .select(`
+            groups(
+                *,
+                group_members(
+                    user_id,
+                    users(id, name, email)
+                )
+            )
+        `)
+        .eq('user_id', user.id)
 
-        if (error) throw error;
-        return data;
+    if (error) throw error
+    return data.map(item => item.groups)
 }
 
 // add member to group by email

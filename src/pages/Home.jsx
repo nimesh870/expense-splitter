@@ -11,10 +11,32 @@ import {
 import { useSelector } from "react-redux"
 import { Lock } from 'lucide-react'
 import { Link } from 'react-router-dom'
-
+import { useDispatch } from "react-redux"
+import { useEffect , useState } from "react"
+import { fetchGroups } from "../features/groupSlice"
+import { createNewGroup } from '../features/groupSlice'
+import { useForm } from "react-hook-form"
 
 function Home() {
+
   const authStatus = useSelector(state => state.auth.status)
+  const { groups , loading , error } = useSelector(state => state.groups)
+  const dispatch = useDispatch();
+  const [showForm, setShowForm] = useState(false)
+  const { register , handleSubmit } = useForm()
+
+  useEffect( () => {
+    dispatch(fetchGroups())
+  }, [dispatch])
+
+  const handleCreateGroup = async (data) => {
+    console.log("data : " , data)
+    const result = await dispatch(createNewGroup({ name : data.group , description : '' }))
+    console.log("Dispatched result : " , result)
+    console.log("Error" , result.error)
+    setShowForm(false)
+  }
+
   if (authStatus === false) {
     return (
     <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4">
@@ -73,7 +95,7 @@ function Home() {
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* stats cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-5 flex items-center gap-4">
             <div className="shrink-0 size-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -110,27 +132,74 @@ function Home() {
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* quick actions */}
         <div className="flex flex-wrap items-center gap-3 mb-10">
-          <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5 hover:text-white cursor-pointer
-           rounded-xl gap-2 h-10 px-5 font-semibold">
-            <Plus className="size-4" />
-            <Link to='/add-expense'>
-              Add Expense
-            </Link>
-          </Button>
+          <Link to = '/add-expenses'>
+            <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5
+             hover:text-white cursor-pointer
+            rounded-xl gap-2 h-10 px-5 font-semibold">
+              <Plus className="size-4" />
+               Add Expense
+            </Button>
+          </Link>
           
           <Button
             variant="outline"
-            className="border-white/10 text-black hover:bg-white/5 hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
+            onClick = { () => setShowForm(true) }
+            className="border-white/10 text-black hover:bg-white/5
+             hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
           >
           <Users className="size-4" />
             Create Group
           </Button>
 
+          {
+            showForm && (
+              <form 
+                  onSubmit={handleSubmit(handleCreateGroup)} 
+                  className="bg-[#1E293B] border border-white/5 rounded-2xl p-5 sm:p-6 w-full max-w-md"
+              >
+                <input
+                  type="text"
+                  placeholder="Enter group name..."
+                  className="w-full h-11 px-4 rounded-xl bg-[#0F172A] border border-white/10 
+                  text-[#F8FAFC] text-sm placeholder:text-[#64748B]
+                  focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500
+                  transition-all duration-200 mb-4"
+                  {...register('group', {
+                    required: 'Group name is required'
+                  })}
+                />
+
+                <div className="flex gap-3 mt-2">
+                <Button
+                    type="submit"
+                    className="flex-1 h-10 bg-[#F8FAFC] text-[#0F172A] 
+                   hover:bg-white/90 hover:scale-[1.02] 
+                    transition-all duration-200 rounded-xl font-semibold"
+                >
+                  Create
+                 </Button>
+
+                <Button
+                  variant="outline"
+                  type = 'button'
+                  onClick={() => setShowForm(false)}
+                  className="flex-1 h-10 border-white/10 text-black 
+                 hover:bg-white/5 hover:text-white 
+                  transition-all duration-200 rounded-xl"
+                >
+                  Cancel
+                </Button>
+                </div>
+              </form>
+          )
+        }
+
           <Button
             variant="outline"
-            className="border-white/10 text-black hover:bg-white/5 hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
+            className="border-white/10 text-black hover:bg-white/5 
+            hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
           >
             <Wallet className="size-4" />
             Settle Up
@@ -146,36 +215,50 @@ function Home() {
               <h2 className="text-lg font-semibold text-[#F8FAFC]">Your Groups</h2>
               <Button
                 variant="ghost"
-                className="text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 cursor-pointer rounded-xl text-sm gap-1.5 h-8 px-3"
+                className="text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5
+                 cursor-pointer rounded-xl text-sm gap-1.5 h-8 px-3"
               >
                 View All
                 <ArrowUpRight className="size-3.5" />
               </Button>
             </div>
 
-            <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10 flex flex-col items-center justify-center text-center">
+            <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10
+             flex flex-col items-center justify-center text-center">
               <Users className="size-10 text-[#334155] mb-3" />
-              <p className="text-[#F8FAFC] font-medium">No groups yet</p>
-              <p className="text-[#94A3B8] text-sm mt-1">
-                Create a group to start splitting expenses
-              </p>
+              {
+                groups.length === 0 ? (
+                  <>
+                    <p className="text-[#F8FAFC] font-medium">No groups yet</p>
+                    <p className="text-[#94A3B8] text-sm mt-1">
+                         Create a group to start splitting expenses
+                    </p>
+                  </>
+                ) : (
+                  groups.map( (group) => (
+                    <div key={group.id} className="text-white">{group.name}</div>
+                  ))
+                )
+              }
             </div>
           </div>
 
-          {/* Recent Activity Section */}
+          {/* recent activity section */}
           <div>
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-semibold text-[#F8FAFC]">Recent Activity</h2>
               <Button
                 variant="ghost"
-                className="text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 cursor-pointer rounded-xl text-sm gap-1.5 h-8 px-3"
+                className="text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 
+                cursor-pointer rounded-xl text-sm gap-1.5 h-8 px-3"
               >
                 <Receipt className="size-3.5" />
                 All
               </Button>
             </div>
 
-            <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10 flex flex-col items-center justify-center text-center">
+            <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10 flex 
+            flex-col items-center justify-center text-center">
               <Receipt className="size-10 text-[#334155] mb-3" />
               <p className="text-[#F8FAFC] font-medium">No activity yet</p>
               <p className="text-[#94A3B8] text-sm mt-1">
@@ -183,10 +266,10 @@ function Home() {
               </p>
             </div>
 
-            {/* Quick Tip */}
             <div className="mt-6 bg-[#1E293B] border border-white/5 rounded-2xl p-5">
               <div className="flex items-start gap-3">
-                <div className="shrink-0 size-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                <div className="shrink-0 size-10 rounded-xl bg-amber-500/10
+                 flex items-center justify-center">
                   <TrendingUp className="size-4 text-amber-400" />
                 </div>
                 <div>
@@ -199,7 +282,6 @@ function Home() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
