@@ -7,8 +7,53 @@ import {
   MoreHorizontal,
 } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { useParams } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useDispatch } from "react-redux"
+import { addNewMember, fetchGroupById } from "../features/groupSlice"
+import { useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
 
 export default function GroupDetails() {
+  const currentGroupDetails = useSelector(state => state.groups.currentGroup)
+  const user = useSelector(state => state.auth.userData)
+  const navigate = useNavigate()
+  const [showForm, setShowForm] = useState(false)
+  const dispatch = useDispatch()
+  const { register , handleSubmit } = useForm()
+  const { id } = useParams()
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchGroupById(id))
+    }
+  }, [id, dispatch])
+
+  const addMember = async (data) => {
+
+     if (!currentGroupDetails) {
+        console.log('Group not loaded yet')
+        return
+    }
+
+     if (user.email === data.email) {
+      console.log("You can't add yourself")
+      return
+      }
+
+      const result = await dispatch(addNewMember({
+        groupId : currentGroupDetails.id,
+        email : data.email // from form name email(register)
+      }))
+
+      if (result.meta.requestStatus === 'rejected') {
+        console.log(result.payload)
+        return
+    }
+    setShowForm(false)
+  }
+
   return (
     <div className="min-h-screen bg-[#0F172A]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
@@ -20,7 +65,7 @@ export default function GroupDetails() {
           </Link>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-[#F8FAFC] tracking-tight">
-              Group Name
+              {currentGroupDetails?.name}
             </h1>
             <p className="text-[#94A3B8] text-sm mt-1">0 members &middot; $0.00 total</p>
           </div>
@@ -29,7 +74,9 @@ export default function GroupDetails() {
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5
-           hover:text-white cursor-pointer rounded-xl gap-2 h-10 px-5 font-semibold">
+           hover:text-white cursor-pointer rounded-xl gap-2 h-10 px-5 font-semibold"
+           onClick = { () => navigate('/add-expense') }
+           >
             <Plus className="size-4" />
             Add Expense
           </Button>
@@ -59,7 +106,62 @@ export default function GroupDetails() {
               <p className="text-[#94A3B8] text-sm mt-1">
                 Add members to start splitting
               </p>
+                <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5
+                 hover:text-white cursor-pointer rounded-xl gap-2 h-10 px-5 font-semibold mt-2"
+                 onClick = { () => setShowForm(true) }
+                 >
+                <Plus className="size-4" />
+                   Add Member
+                </Button>
             </div>
+            
+            {
+              showForm && (
+                  <form 
+                  onSubmit={handleSubmit(addMember)} 
+                  className="bg-[#1E293B] mt-2 border border-white/5 rounded-2xl p-5 sm:p-6 w-full max-w-md"
+              >
+                <input
+                  type="text"
+                  placeholder="member@member.com"
+                  className="w-full h-11 px-4 rounded-xl bg-[#0F172A] border border-white/10 
+                  text-[#F8FAFC] text-sm placeholder:text-[#64748B]
+                  focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500
+                  transition-all duration-200 mb-4"
+                  {...register('email', {
+                    required: 'Member email is required',
+                    validate : {
+                      matchPattern : (value) =>  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/.test(value)
+                      || "Enter valid email address"
+                    }
+                  })}
+                />
+
+                <div className="flex gap-3 mt-2">
+                <Button
+                    type="submit"
+                    className="flex-1 h-10 bg-[#F8FAFC] text-[#0F172A] 
+                   hover:bg-white/90 hover:scale-[1.02] 
+                    transition-all duration-200 rounded-xl font-semibold"
+                >
+                  Add
+                 </Button>
+
+                <Button
+                  variant="outline"
+                  type = 'button'
+                  onClick={() => setShowForm(false)}
+                  className="flex-1 h-10 border-white/10 text-black 
+                 hover:bg-white/5 hover:text-white 
+                  transition-all duration-200 rounded-xl"
+                >
+                  Cancel
+                </Button>
+                </div>
+              </form>
+              )
+            }
+
           </div>
 
           {/* Expenses list */}

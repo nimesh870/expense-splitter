@@ -16,6 +16,8 @@ import { useEffect , useState } from "react"
 import { fetchGroups } from "../features/groupSlice"
 import { createNewGroup } from '../features/groupSlice'
 import { useForm } from "react-hook-form"
+import { setCurrentGroup } from "../features/groupSlice"
+import { useNavigate } from "react-router-dom"
 
 function Home() {
 
@@ -24,16 +26,15 @@ function Home() {
   const dispatch = useDispatch();
   const [showForm, setShowForm] = useState(false)
   const { register , handleSubmit } = useForm()
+  const navigate = useNavigate()
+  const user = useSelector(state => state.auth.userData)
 
   useEffect( () => {
     dispatch(fetchGroups())
   }, [dispatch])
 
   const handleCreateGroup = async (data) => {
-    console.log("data : " , data)
-    const result = await dispatch(createNewGroup({ name : data.group , description : '' }))
-    console.log("Dispatched result : " , result)
-    console.log("Error" , result.error)
+    await dispatch(createNewGroup({ name : data.createGroup , description : '' }))
     setShowForm(false)
   }
 
@@ -79,7 +80,7 @@ function Home() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-[#F8FAFC] tracking-tight">
-              Welcome back
+              Welcome Back, {user?.user_metadata?.name}
             </h1>
             <p className="text-[#94A3B8] text-sm sm:text-base mt-1">
               Here&apos;s your expense summary
@@ -134,14 +135,14 @@ function Home() {
 
         {/* quick actions */}
         <div className="flex flex-wrap items-center gap-3 mb-10">
-          <Link to = '/add-expenses'>
             <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5
              hover:text-white cursor-pointer
-            rounded-xl gap-2 h-10 px-5 font-semibold">
+            rounded-xl gap-2 h-10 px-5 font-semibold"
+            onClick = { () => navigate('/add-expense') }
+            >
               <Plus className="size-4" />
                Add Expense
             </Button>
-          </Link>
           
           <Button
             variant="outline"
@@ -166,7 +167,7 @@ function Home() {
                   text-[#F8FAFC] text-sm placeholder:text-[#64748B]
                   focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500
                   transition-all duration-200 mb-4"
-                  {...register('group', {
+                  {...register('createGroup', {
                     required: 'Group name is required'
                   })}
                 />
@@ -236,7 +237,20 @@ function Home() {
                   </>
                 ) : (
                   groups.map( (group) => (
-                    <div key={group.id} className="text-white">{group.name}</div>
+                    <div key={group.id}
+                       className="flex items-center justify-between p-4 bg-[#0F172A] 
+                        border border-white/5 rounded-xl mb-2 cursor-pointer hover:border-white/20 
+                        transition-all"
+                        onClick={ () => {
+                          dispatch(setCurrentGroup(group)) // user's current group
+                          navigate(`/groups/${group.id}`)
+                        }}
+                        >
+                          <div>
+                            <p className="text-[#F8FAFC] font-medium">{group.name}</p>
+                          </div>
+                          <ArrowUpRight className="size-4 text-[#94A3B8]" />
+                     </div>
                   ))
                 )
               }
@@ -264,22 +278,6 @@ function Home() {
               <p className="text-[#94A3B8] text-sm mt-1">
                 Your recent expenses will appear here
               </p>
-            </div>
-
-            <div className="mt-6 bg-[#1E293B] border border-white/5 rounded-2xl p-5">
-              <div className="flex items-start gap-3">
-                <div className="shrink-0 size-10 rounded-xl bg-amber-500/10
-                 flex items-center justify-center">
-                  <TrendingUp className="size-4 text-amber-400" />
-                </div>
-                <div>
-                  <p className="text-[#F8FAFC] text-sm font-semibold">Quick Tip</p>
-                  <p className="text-[#94A3B8] text-xs mt-1 leading-relaxed">
-                    You can settle debts directly from the group page. No more awkward
-                    money conversations!
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

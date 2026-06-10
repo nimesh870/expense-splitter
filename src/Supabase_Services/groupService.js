@@ -90,6 +90,15 @@ export const getGroups = async () => {
 
         if (Existing) throw new Error("User is already a member of this group")
 
+    //checks if user exists in public.users
+    const { data: existingUser, error: existingUserError } = await supabase
+    .from('users')
+    .select('id, name, email')
+    .eq('email', email)
+    .single()
+
+    if (existingUserError) throw new Error('User not found with this email')
+
     // add members
     const {data , error} = await supabase
         .from('group_members')

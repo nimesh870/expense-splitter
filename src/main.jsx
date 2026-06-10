@@ -43,7 +43,7 @@ const router = createBrowserRouter([
         </AuthLayout>
       )},
 
-      {path : 'groups' , element : (
+      {path : '/groups/:id' , element : (
         <AuthLayout authentication>
           <GroupDetails />
         </AuthLayout>
