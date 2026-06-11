@@ -14,6 +14,7 @@ import { store } from './store/store.js'
 import AuthLayout from './components/AuthLayout.jsx'
 import { Link } from 'react-router-dom'
 
+
 const router = createBrowserRouter([
   {
     path : '/',
@@ -43,7 +44,7 @@ const router = createBrowserRouter([
         </AuthLayout>
       )},
 
-      {path : '/groups/:id' , element : (
+      {path : 'groups/:id' , element : (
         <AuthLayout authentication>
           <GroupDetails />
         </AuthLayout>

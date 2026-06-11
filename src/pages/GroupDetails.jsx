@@ -14,29 +14,34 @@ import { useDispatch } from "react-redux"
 import { addNewMember, fetchGroupById } from "../features/groupSlice"
 import { useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
+import { fetchExpenses } from "../features/expenseSlice"
 
 export default function GroupDetails() {
   const currentGroupDetails = useSelector(state => state.groups.currentGroup)
   const user = useSelector(state => state.auth.userData)
+  const {expense} = useSelector(state => state.expenses)
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const dispatch = useDispatch()
-  const { register , handleSubmit } = useForm()
+  const { register , handleSubmit , reset } = useForm()
   const { id } = useParams()
 
   useEffect(() => {
     if (id) {
       dispatch(fetchGroupById(id))
+      dispatch(fetchExpenses(id))
     }
   }, [id, dispatch])
 
+  if (!currentGroupDetails) {
+    return (
+      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+        <p className="text-[#94A3B8]">Loading...</p>
+      </div>
+    )
+  }
+
   const addMember = async (data) => {
-
-     if (!currentGroupDetails) {
-        console.log('Group not loaded yet')
-        return
-    }
-
      if (user.email === data.email) {
       console.log("You can't add yourself")
       return
@@ -51,6 +56,12 @@ export default function GroupDetails() {
         console.log(result.payload)
         return
     }
+    reset()
+    setShowForm(false)
+  }
+
+  const handleCancel = () => {
+    reset()
     setShowForm(false)
   }
 
@@ -67,7 +78,7 @@ export default function GroupDetails() {
             <h1 className="text-2xl sm:text-3xl font-bold text-[#F8FAFC] tracking-tight">
               {currentGroupDetails?.name}
             </h1>
-            <p className="text-[#94A3B8] text-sm mt-1">0 members &middot; $0.00 total</p>
+            <p className="text-[#94A3B8] text-sm mt-1">{ currentGroupDetails?.group_members.length || 0 } member &middot; $0.00 total</p>
           </div>
         </div>
 
@@ -75,7 +86,7 @@ export default function GroupDetails() {
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5
            hover:text-white cursor-pointer rounded-xl gap-2 h-10 px-5 font-semibold"
-           onClick = { () => navigate('/add-expense') }
+           onClick = { () => navigate(`/add-expense?groupId=${id}`) }
            >
             <Plus className="size-4" />
             Add Expense
@@ -102,10 +113,28 @@ export default function GroupDetails() {
             </h2>
             <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10 flex flex-col items-center justify-center text-center">
               <Users className="size-10 text-[#334155] mb-3" />
-              <p className="text-[#F8FAFC] font-medium">No members yet</p>
-              <p className="text-[#94A3B8] text-sm mt-1">
-                Add members to start splitting
-              </p>
+              {
+                currentGroupDetails.group_members?.length > 0 ? (
+                  <div>
+                    {
+                      currentGroupDetails.group_members.map( (member) => (
+                        <div key={member.user_id} className="flex items-center justify-between py-3 border-b
+                         border-white/5 last:border-0">
+                          <div>
+                            <p className="text-[#F8FAFC] font-medium"> {member.users?.name} </p>
+                            <p className="text-[#F8FAFC] font-medium"> {member.users?.email} </p>
+                          </div>
+                        </div>
+                      ))
+                    }
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-[#F8FAFC] font-medium"> No members yet </p>
+                    <p className="text-[#94A3B8] text-sm mt-1"> Add members to start splitting </p>
+                  </div>
+                )
+              }
                 <Button className="bg-[#F8FAFC] text-[#0F172A] hover:bg-white/5
                  hover:text-white cursor-pointer rounded-xl gap-2 h-10 px-5 font-semibold mt-2"
                  onClick = { () => setShowForm(true) }
@@ -150,7 +179,7 @@ export default function GroupDetails() {
                 <Button
                   variant="outline"
                   type = 'button'
-                  onClick={() => setShowForm(false)}
+                  onClick={handleCancel}
                   className="flex-1 h-10 border-white/10 text-black 
                  hover:bg-white/5 hover:text-white 
                   transition-all duration-200 rounded-xl"

@@ -36,7 +36,7 @@ export const getGroupById = async (groupId) => {
     .from('groups')
     .select(`
       *,
-      group_members!inner(
+      group_members(
         user_id,
         users(id, name, email)
       )
@@ -86,7 +86,7 @@ export const getGroups = async () => {
         .select('id')
         .eq('group_id' , groupId)
         .eq('user_id' , user.id)
-        .single()
+        .maybeSingle()
 
         if (Existing) throw new Error("User is already a member of this group")
 
@@ -104,7 +104,7 @@ export const getGroups = async () => {
         .from('group_members')
         .insert({
             group_id : groupId,
-            user_id : userId
+            user_id : user.id
         })
         .select()
         .single()

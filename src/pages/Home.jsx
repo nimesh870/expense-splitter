@@ -25,7 +25,7 @@ function Home() {
   const { groups , loading , error } = useSelector(state => state.groups)
   const dispatch = useDispatch();
   const [showForm, setShowForm] = useState(false)
-  const { register , handleSubmit } = useForm()
+  const { register , handleSubmit , reset } = useForm()
   const navigate = useNavigate()
   const user = useSelector(state => state.auth.userData)
 
@@ -35,6 +35,12 @@ function Home() {
 
   const handleCreateGroup = async (data) => {
     await dispatch(createNewGroup({ name : data.createGroup , description : '' }))
+    reset()
+    setShowForm(false)
+  }
+
+  const handleCancel = () => {
+    reset()
     setShowForm(false)
   }
 
@@ -185,7 +191,7 @@ function Home() {
                 <Button
                   variant="outline"
                   type = 'button'
-                  onClick={() => setShowForm(false)}
+                  onClick={handleCancel}
                   className="flex-1 h-10 border-white/10 text-black 
                  hover:bg-white/5 hover:text-white 
                   transition-all duration-200 rounded-xl"
