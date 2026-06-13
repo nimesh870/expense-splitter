@@ -6,11 +6,13 @@ import { useForm } from "react-hook-form"
 import { useDispatch , useSelector } from "react-redux"
 import { fetchGroupById, fetchGroups } from "../features/groupSlice"
 import { addNewExpense } from "../features/expenseSlice"
+import { useNavigate } from "react-router-dom"
 
 export default function AddExpense() {
   const [split, setSplit] = useState("equal")
   const { register , handleSubmit } = useForm()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { groups , currentGroup } = useSelector(state => state.groups)
 
   useEffect( () => {
@@ -19,7 +21,6 @@ export default function AddExpense() {
 
   const handleSelect = (event) => {
     const groupId = event.target.value 
-
     if (groupId) {
       dispatch(fetchGroupById(groupId))
     }
@@ -27,13 +28,40 @@ export default function AddExpense() {
 
   const addExpense = async (data) => {
     try {
+
+      let splits = [];
+
+      if (split === 'equal') {
+        const selectedMember = Array.isArray(data.splits) ? data.splits : [data.splits]
+        const amountPerPerson = Number(data.amount) / selectedMember.length;
+        splits = selectedMember.map( userId => ({
+          userId,
+          amount : amountPerPerson
+        }))
+
+      } else if( split === 'custom' ) {
+        splits = Object.entries(data.customSplits).map( ([userId , amount]) => ({
+          userId,
+          amount : Number(amount)
+        }))
+      }
+
       const expense = await dispatch(addNewExpense({
       description : data.description,
-      group_id : data.groupId,
+      groupId : data.groupId,
       amount : Number(data.amount),
-      paid_by : data.paidBy,
-      split_type : split
+      paidBy : data.paidBy,
+      splitType : split,
+      splits
       }))
+
+      if (expense.meta.requestStatus === 'rejected') {
+        console.log('Error:', expense.payload)
+        return
+      }
+
+      navigate(`/groups/${data.groupId}`)
+
     } catch (error) {
       console.log("Error while adding expense : ",error)
     }
@@ -182,7 +210,7 @@ export default function AddExpense() {
                       <div className="bg-[#0F172A] border border-white/10
                        rounded-xl p-4 flex flex-col gap-2">
                         {
-                          currentGroup?.group_members.map( (member) => (
+                          currentGroup?.group_members?.map( (member) => (
                             <div key={member.user_id} className="flex items-center justify-between py-2 
                               border-b border-white/5 last:border-0">
                                 <div className="flex items-center gap-3">
@@ -210,14 +238,15 @@ export default function AddExpense() {
                       <div className="bg-[#0F172A] border border-white/10
                        rounded-xl p-4 flex flex-col gap-2">
                         {
-                          currentGroup?.group_members.map( (member) => (
+                          currentGroup?.group_members?.map( (member) => (
                             <div key={member.user_id} className="flex items-center justify-between py-2
                             border-b border-white/5 last:border-0">
                               <span className="text-[#F8FAFC] text-sm">{member.users?.name}</span>
                               <input
                               type="number"
                               placeholder="0.00"
-                              className="w-24 h-8 px-3 rounded-xl bg-[#1E293B] border border-white/10
+                              className="w-24 h-8 px-3 rounded-xl bg-[#1E293B]
+                               border border-white/10 ml-2
                                  text-[#F8FAFC] text-sm focus:outline-none"
                                  {...register(`customSplits.${member.user_id}`)}
                                />
