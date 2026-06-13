@@ -57,7 +57,9 @@ export default function Login() {
               <input
                 type="email"
                 placeholder="you@example.com"
-                className="w-full h-10 px-3.5 rounded-xl bg-[#0F172A] border border-white/10 text-[#F8FAFC] text-sm placeholder:text-[#64748B] focus:outline-none focus:border-white/20 transition-colors"
+                className="w-full h-10 px-3.5 rounded-xl bg-[#0F172A] border
+                 border-white/10 text-[#F8FAFC] text-sm placeholder:text-[#64748B]
+                  focus:outline-none focus:border-white/20 transition-colors"
                 {
                   ...register('email' , {
                     required : 'Email is required',

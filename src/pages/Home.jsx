@@ -34,7 +34,7 @@ function Home() {
   }, [dispatch])
 
   const handleCreateGroup = async (data) => {
-    await dispatch(createNewGroup({ name : data.createGroup , description : '' }))
+    await dispatch(createNewGroup({ name : data.groupName , description : '' }))
     reset()
     setShowForm(false)
   }
@@ -173,7 +173,7 @@ function Home() {
                   text-[#F8FAFC] text-sm placeholder:text-[#64748B]
                   focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500
                   transition-all duration-200 mb-4"
-                  {...register('createGroup', {
+                  {...register('groupName', {
                     required: 'Group name is required'
                   })}
                 />
