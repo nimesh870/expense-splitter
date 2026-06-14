@@ -5,12 +5,13 @@ import {
   Plus,
   DollarSign,
   MoreHorizontal,
+  Trash2
 } from "lucide-react"
 import { useSelector } from "react-redux"
 import { useParams , Link , useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
-import { addNewMember, fetchGroupById } from "../features/groupSlice"
+import { addNewMember, deleteExistingGroup, fetchGroupById, removeGroupMember } from "../features/groupSlice"
 import { useForm } from "react-hook-form"
 import { fetchExpenses } from "../features/expenseSlice"
 
@@ -41,6 +42,7 @@ export default function GroupDetails() {
     )
   }
 
+  // add member
   const addMember = async (data) => {
      if (user.email === data.email) {
       console.log("You can't add yourself")
@@ -60,6 +62,23 @@ export default function GroupDetails() {
     setShowForm(false)
   }
 
+  // remove member
+  const removeMember = async (userId) => {
+    await dispatch(removeGroupMember({
+      groupId : currentGroupDetails.id,
+      userId
+    }))
+  }
+
+  // delete group
+  const deleteGroup = async (groupId) => {
+    const result = await dispatch(deleteExistingGroup(groupId))
+
+    if (result.meta.requestStatus === 'fulfilled') {
+      navigate('/')
+    }
+  }
+
   const handleCancel = () => {
     reset()
     setShowForm(false)
@@ -70,7 +89,8 @@ export default function GroupDetails() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
 
         {/* Back + Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-6 justify-between">
+          <div className="flex items-center gap-4">
           <Link to="/" className="text-[#94A3B8] hover:text-[#F8FAFC] transition-colors">
             <ArrowLeft className="size-5" />
           </Link>
@@ -78,8 +98,18 @@ export default function GroupDetails() {
             <h1 className="text-2xl sm:text-3xl font-bold text-[#F8FAFC] tracking-tight">
               {currentGroupDetails?.name}
             </h1>
-            <p className="text-[#94A3B8] text-sm mt-1">{ currentGroupDetails?.group_members.length || 0 } member &middot; ${expenses[0]?.amount} total</p>
+            <p className="text-[#94A3B8] text-sm mt-1">{ currentGroupDetails?.group_members?.length || 0 } member &middot; ${expenses.reduce((sum, expense) => sum + expense.amount, 0).toFixed(2)} total </p>
           </div>
+         </div>
+          {/* Delete group button */}
+          <Button
+            onClick = { () => deleteGroup(currentGroupDetails.id) }
+            variant="outline"
+            className="bg-red-500 border-0 hover:bg-red-500/10
+           text-white hover:text-red-500 cursor-pointer mb-2 rounded-xl gap-2 h-10 px-5"
+            >
+              Delete Group
+          </Button>
         </div>
 
         {/* Actions */}
@@ -111,7 +141,9 @@ export default function GroupDetails() {
               <Users className="size-4" />
               Members
             </h2>
-            <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10 flex flex-col items-center justify-center text-center">
+            <div className="bg-[#1E293B] border border-white/5
+              rounded-2xl p-10 flex flex-col 
+              items-center justify-center text-center">
               <Users className="size-10 text-[#334155] mb-3" />
               {
                 currentGroupDetails.group_members?.length > 0 ? (
@@ -124,7 +156,16 @@ export default function GroupDetails() {
                             <p className="text-[#F8FAFC] font-medium"> {member.users?.name} </p>
                             <p className="text-[#F8FAFC] font-medium"> {member.users?.email} </p>
                           </div>
+                            <Button
+                            onClick = { () => removeMember(member.user_id) }
+                            variant="outline"
+                            className="bg-red-500 border-0 hover:bg-red-300
+                             text-white mx-5 cursor-pointer rounded-xl gap-2 h-10 px-5"
+                            >
+                              <Trash2 className="size-6" />
+                            </Button>
                         </div>
+                        
                       ))
                     }
                   </div>

@@ -72,7 +72,7 @@ export const deleteExistingGroup = createAsyncThunk(
     async (groupId , thunkAPI) => {
         try {
             await deleteGroup(groupId)
-            if (data) return groupId;
+            return groupId;
 
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message)
