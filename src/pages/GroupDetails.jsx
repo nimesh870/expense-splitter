@@ -17,11 +17,12 @@ import { fetchExpenses } from "../features/expenseSlice"
 export default function GroupDetails() {
   const currentGroupDetails = useSelector(state => state.groups.currentGroup)
   const user = useSelector(state => state.auth.userData)
-  const {expense} = useSelector(state => state.expenses)
+  const { expenses } = useSelector(state => state.expenses)
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const dispatch = useDispatch()
   const { register , handleSubmit , reset } = useForm()
+
   const { id } = useParams()
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function GroupDetails() {
       dispatch(fetchExpenses(id))
     }
   }, [id, dispatch])
+
 
   if (!currentGroupDetails) {
     return (
@@ -76,7 +78,7 @@ export default function GroupDetails() {
             <h1 className="text-2xl sm:text-3xl font-bold text-[#F8FAFC] tracking-tight">
               {currentGroupDetails?.name}
             </h1>
-            <p className="text-[#94A3B8] text-sm mt-1">{ currentGroupDetails?.group_members.length || 0 } member &middot; $0.00 total</p>
+            <p className="text-[#94A3B8] text-sm mt-1">{ currentGroupDetails?.group_members.length || 0 } member &middot; ${expenses[0]?.amount} total</p>
           </div>
         </div>
 
@@ -197,21 +199,44 @@ export default function GroupDetails() {
               <h2 className="text-lg font-semibold text-[#F8FAFC]">Expenses</h2>
               <Button
                 variant="ghost"
-                className="text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 cursor-pointer rounded-xl text-sm h-8 px-3"
+                className="text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5 
+                cursor-pointer rounded-xl text-sm h-8 px-3"
               >
                 <MoreHorizontal className="size-4" />
               </Button>
             </div>
+            {
+              expenses.length > 0 ? (
+                <div className="bg-[#1E293B] border border-white/5
+                 rounded-2xl divide-y divide-white/5">
+                  {
+                    expenses.map( (expense) => (
+                      <div key={expense.id} className="flex items-center justify-between p-4">
+                        <div>
+                          <p className="text-[#F8FAFC] font-medium">Paid For {expense.description}</p>
+                          <p className="text-[#94A3B8] text-sm mt-0.5">Paid By {expense.users?.name}  &middot; At {expense.date} </p>
+                        </div>
 
-            <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10 flex flex-col items-center justify-center text-center">
-              <Plus className="size-10 text-[#334155] mb-3" />
-              <p className="text-[#F8FAFC] font-medium">No expenses yet</p>
-              <p className="text-[#94A3B8] text-sm mt-1">
-                Add your first expense to get started
-              </p>
-            </div>
+                        <div className="text-right">
+                          <p className="text-[#F8FAFC] font-semibold">${expense.amount}</p>
+                          <p className="text-[#94A3B8] text-sm mt-0.5">{expense.split_type}</p>
+                        </div>
+                      </div>
+                    ))
+                  }
+                </div>
+              ) : (
+                    <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-10 flex flex-col
+                     items-center justify-center text-center">
+                      <Plus className="size-10 text-[#334155] mb-3" />
+                      <p className="text-[#F8FAFC] font-medium">No expenses yet</p>
+                      <p className="text-[#94A3B8] text-sm mt-1">
+                        Add your first expense to get started
+                      </p>
+                  </div>
+              )
+            }
           </div>
-
         </div>
       </div>
     </div>
