@@ -159,8 +159,8 @@ export default function GroupDetails() {
                             <Button
                             onClick = { () => removeMember(member.user_id) }
                             variant="outline"
-                            className="bg-red-500 border-0 hover:bg-red-300
-                             text-white mx-5 cursor-pointer rounded-xl gap-2 h-10 px-5"
+                            className="bg-red-500 border-0 hover:bg-red-500/10 text-white
+                             hover:text-red-500 mx-5 cursor-pointer rounded-xl gap-2 h-10 px-5"
                             >
                               <Trash2 className="size-6" />
                             </Button>

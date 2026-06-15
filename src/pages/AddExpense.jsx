@@ -75,7 +75,7 @@ export default function AddExpense() {
         {/* Back + Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link to="/" className="text-[#94A3B8] hover:text-[#F8FAFC] transition-colors">
-            <ArrowLeft className="size-5" />
+            <ArrowLeft className="size-8" />
           </Link>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#F8FAFC] tracking-tight">
             Add Expense
