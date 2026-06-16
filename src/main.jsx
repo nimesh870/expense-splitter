@@ -6,7 +6,6 @@ import './index.css'
 import App from './App.jsx'
 import AddExpense from './pages/AddExpense.jsx'
 import GroupDetails from './pages/GroupDetails.jsx'
-import History from './pages/History.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
@@ -56,11 +55,6 @@ const router = createBrowserRouter([
         </AuthLayout>
       )},
 
-      {path : 'history' , element : (
-        <AuthLayout authentication>
-          <History />
-        </AuthLayout>
-      )}
     ]
   }
 ])

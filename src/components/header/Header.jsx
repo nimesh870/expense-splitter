@@ -29,7 +29,6 @@ export default function Header() {
   const navItems = [
     { name : 'Home' , path : '/' , active : true },
     { name : 'Expense' , path : '/add-expense' , active : authStatus },
-    { name : 'History' , path :'/history' , active : authStatus },
     { name : 'login' , path : '/login' , active : !authStatus },
     { name : 'signup' , path : '/signup' , active : !authStatus },
   ]
