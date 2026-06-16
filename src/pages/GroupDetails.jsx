@@ -13,7 +13,7 @@ import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { addNewMember, deleteExistingGroup, fetchGroupById, removeGroupMember } from "../features/groupSlice"
 import { useForm } from "react-hook-form"
-import { fetchExpenses } from "../features/expenseSlice"
+import { fetchExpenses , deleteExistingExpense } from "../features/expenseSlice"
 
 export default function GroupDetails() {
   const currentGroupDetails = useSelector(state => state.groups.currentGroup)
@@ -76,6 +76,15 @@ export default function GroupDetails() {
 
     if (result.meta.requestStatus === 'fulfilled') {
       navigate('/')
+    }
+  }
+
+  // delete expense 
+  const deleteCurrentExpense = async (expenseId) => {
+    const result = await dispatch(deleteExistingExpense(expenseId))
+
+    if (result.meta.requestStatus === "rejected") {
+      console.log("Error while deleting expense")
     }
   }
 
@@ -261,6 +270,14 @@ export default function GroupDetails() {
                         <div className="text-right">
                           <p className="text-[#F8FAFC] font-semibold">${expense.amount}</p>
                           <p className="text-[#94A3B8] text-sm mt-0.5">{expense.split_type}</p>
+                          <Button
+                            onClick = { () => deleteCurrentExpense(expense.id) }
+                            variant="outline"
+                            className="bg-red-500 border-0 hover:bg-red-500/10 text-white
+                             hover:text-red-500 my-2 cursor-pointer rounded-xl gap-2 h-10 px-5"
+                          >
+                              <Trash2 className="size-6" />
+                          </Button>
                         </div>
                       </div>
                     ))
