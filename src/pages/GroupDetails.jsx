@@ -14,6 +14,32 @@ import { useDispatch } from "react-redux"
 import { addNewMember, deleteExistingGroup, fetchGroupById, removeGroupMember } from "../features/groupSlice"
 import { useForm } from "react-hook-form"
 import { fetchExpenses , deleteExistingExpense } from "../features/expenseSlice"
+import { createNewTransaction } from '../features/transactionSlice'
+
+
+const calculateBalances = (expenses , currentUserId) => {
+  const owes = {}
+
+  expenses.forEach(expense => {
+    const paidBy = expense.paid_by
+
+    expense.expense_splits.forEach( (split) => {
+      const userId = split.user_id
+      const amount = split.amount
+
+      if (userId === paidBy) return
+
+      if (paidBy === currentUserId) {
+        owes[userId] = (owes[userId] || 0) + amount
+      } else if (userId === currentUserId) {
+        owes[paidBy] = (owes[paidBy] || 0) - amount
+      }
+
+    })
+  });
+
+  return owes;
+}
 
 export default function GroupDetails() {
   const currentGroupDetails = useSelector(state => state.groups.currentGroup)
@@ -23,7 +49,7 @@ export default function GroupDetails() {
   const [showForm, setShowForm] = useState(false)
   const dispatch = useDispatch()
   const { register , handleSubmit , reset } = useForm()
-
+  const balances = calculateBalances(expenses , user?.id)
   const { id } = useParams()
 
   useEffect(() => {
@@ -32,7 +58,6 @@ export default function GroupDetails() {
       dispatch(fetchExpenses(id))
     }
   }, [id, dispatch])
-
 
   if (!currentGroupDetails) {
     return (
@@ -80,7 +105,7 @@ export default function GroupDetails() {
   }
 
   // delete expense 
-  const deleteCurrentExpense = async (expenseId) => {
+  const handleDeleteCurrentExpense = async (expenseId) => {
     const result = await dispatch(deleteExistingExpense(expenseId))
 
     if (result.meta.requestStatus === "rejected") {
@@ -91,6 +116,27 @@ export default function GroupDetails() {
   const handleCancel = () => {
     reset()
     setShowForm(false)
+  }
+
+  const getMemberName = (userId) => {
+    const member = currentGroupDetails?.group_members?.find(
+      member => member.user_id === userId
+    )
+    return member?.users?.name || 'Unknown'
+  }
+
+  const handleSettleUp = async (toUserId, amount) => {
+    const result = await dispatch(createNewTransaction({
+        groupId: currentGroupDetails.id,
+        fromUser: user.id,
+        toUser: toUserId,
+        amount
+    }))
+
+    if (result.meta.requestStatus === 'fulfilled') {
+        console.log('Transaction created successfully')
+        // TODO: toast.success('Settled up successfully')
+    }
   }
 
   return (
@@ -271,7 +317,7 @@ export default function GroupDetails() {
                           <p className="text-[#F8FAFC] font-semibold">${expense.amount}</p>
                           <p className="text-[#94A3B8] text-sm mt-0.5">{expense.split_type}</p>
                           <Button
-                            onClick = { () => deleteCurrentExpense(expense.id) }
+                            onClick = { () => handleDeleteCurrentExpense(expense.id) }
                             variant="outline"
                             className="bg-red-500 border-0 hover:bg-red-500/10 text-white
                              hover:text-red-500 my-2 cursor-pointer rounded-xl gap-2 h-10 px-5"
@@ -296,6 +342,52 @@ export default function GroupDetails() {
             }
           </div>
         </div>
+        {/* balances */}
+          {
+            Object.keys(balances).length > 0 && (
+              <div className="mt-6">
+                <h2 className="text-lg font-semibold text-[#F8FAFC] mb-4">Balances</h2>
+                <div className="bg-[#1E293B] border border-white/5
+                 rounded-2xl divide-y divide-white/5">
+                  {
+                    Object.entries(balances).map( ([userId , amount]) => (
+                      amount !== 0 && (
+                        <div key={userId} className="flex items-center justify-between p-4">
+                          <div>
+                            <p className="text-[#F8FAFC] font-medium">
+                              {
+                                amount > 0 
+                                ? `${getMemberName(userId)} owes you`
+                                : `You owe ${getMemberName(userId)}`
+                              }
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <p 
+                            className={`font-semibold ${amount > 0 ? 'text-emerald-400' : 'text-rose-400'}`}> 
+                              ${Math.abs(amount).toFixed(2)} 
+                            </p>
+                            {
+                              amount < 0 && (
+                                <Button
+                                  type="button"
+                                  className="bg-[#F8FAFC] text-[#0F172A] hover:bg-[#E2E8F0]
+                                  cursor-pointer rounded-xl h-8 px-3 text-sm font-semibold"
+                                  onClick={ () => handleSettleUp(userId , Math.abs(amount)) }
+                                >
+                                    Settle Up
+                                </Button>
+                              )
+                            }
+                          </div>
+                        </div>
+                      )
+                    ))
+                  }
+                </div>
+              </div>
+            )
+          }
       </div>
     </div>
   )
