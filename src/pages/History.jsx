@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
-import { fetchAllTransactions } from "../features/transactionSlice"
+import { fetchUserTransaction } from "../features/transactionSlice"
 import { useNavigate } from "react-router-dom"
 
 const filters = ["All", "You paid", "You owe"]
@@ -24,7 +24,7 @@ export default function History() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    dispatch(fetchAllTransactions())
+    dispatch(fetchUserTransaction())
   },[dispatch])
 
   const filteredDetails = transactions
@@ -33,10 +33,10 @@ export default function History() {
           if (activeFilter === "You owe") return transaction.to_user === user?.id
           return true
         })
-        .filter( (transaction) => {
+        .filter( (transaction) => (
           transaction.from_user_details?.name?.toLowerCase().includes(query.toLowerCase()) ||
           transaction.to_user_details?.name?.toLowerCase().includes(query.toLowerCase())
-        })
+        ))
 
   const totalPaid = transactions
         .filter( transaction => transaction.from_user === user?.id )
@@ -130,7 +130,7 @@ export default function History() {
                    className="flex justify-center items-center p-4">
                     <div>
                       <p className="text-[#F8FAFC] font-medium">
-                        { transaction.id === user?.id 
+                        { transaction.from_user === user?.id 
                           ? `You paid ${transaction.to_user_details?.name}`
                           : `${transaction.to_user_details?.name} paid you`
                         }
@@ -142,7 +142,7 @@ export default function History() {
 
                     <div className="text-right">
                       <p className={`font-semibold ${
-                          transaction.from_user === userData?.id
+                          transaction.from_user === user?.id
                           ? 'text-rose-400'
                           : 'text-emerald-400'
                       }`}>
