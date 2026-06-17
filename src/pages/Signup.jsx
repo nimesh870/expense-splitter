@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { signup as signupService } from "../Supabase_Services/Authentication"
 import { useDispatch } from "react-redux"
 import { login } from '../features/authSlice'
+import { showToast } from "../features/toastSlice"
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false)
@@ -29,11 +30,18 @@ export default function Signup() {
           userData : result.data,
           token : result.session.access_token
         }))
+
+        dispatch(showToast({
+          message : "Account successfully created",
+        }))
         navigate('/')
       }
       
     } catch (error) {
       console.log("Error while signing in : " , error)
+      dispatch(showToast({
+        message : "User already exists",
+      }))
     } finally {
       setLoading(false)
     }

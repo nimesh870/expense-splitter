@@ -5,11 +5,13 @@ import { useEffect , useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { onAuthStateChange } from './Supabase_Services/Authentication'
 import { login , logout } from './features/authSlice'
-
+import { useSelector } from 'react-redux'
+import Toast from './Toast'
 
 function App() {
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch();
+  const toast = useSelector(state => state.toast)
   
   useEffect( () => {
     const { data : { subscription } } = onAuthStateChange( (session)  => {
@@ -28,13 +30,16 @@ function App() {
   }, [])
 
   return !loading ? (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <>
+      {toast.visibility && (<Toast message={toast.message}/>) }
+      <div className="min-h-screen flex flex-col bg-slate-50">
         <Header />
         <main className='flex-1'>
           <Outlet />
         </main>
         <Footer />
-    </div>
+      </div>
+    </>
   ) : (null)
 }
 

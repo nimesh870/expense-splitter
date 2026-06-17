@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { login as loginAction } from '../features/authSlice'
 import { login as loginService } from '../Supabase_Services/Authentication'
 import { useDispatch } from "react-redux"
+import { showToast } from "../features/toastSlice"
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -26,10 +27,16 @@ export default function Login() {
         userData : result.user,
         token : result.session.user_token
       }))
+      
+      dispatch(showToast({
+        message : "Logged in successfully",
+      }))
       navigate('/')
       
     } catch (error) {
-      console.log(error)
+      dispatch(showToast({
+        message : "Invalid credentials. Please check email or password",
+      }))
     } finally {
       setLoading(false)
     }
@@ -97,16 +104,6 @@ export default function Login() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-            </div>
-
-            {/* Forgot Password */}
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="text-sm text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer"
-              >
-                Forgot password?
-              </button>
             </div>
 
             {/* Submit */}

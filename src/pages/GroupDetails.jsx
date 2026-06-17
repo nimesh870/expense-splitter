@@ -15,6 +15,7 @@ import { addNewMember, deleteExistingGroup, fetchGroupById, removeGroupMember } 
 import { useForm } from "react-hook-form"
 import { fetchExpenses , deleteExistingExpense } from "../features/expenseSlice"
 import { createNewTransaction } from '../features/transactionSlice'
+import { showToast } from '../features/toastSlice'
 
 
 const calculateBalances = (expenses , currentUserId) => {
@@ -69,10 +70,10 @@ export default function GroupDetails() {
 
   // add member
   const addMember = async (data) => {
-     if (user.email === data.email) {
-      console.log("You can't add yourself")
-      return
-      }
+        if (user.email === data.email) {
+          console.log("You can't add yourself")
+          return
+        }
 
       const result = await dispatch(addNewMember({
         groupId : currentGroupDetails.id,
