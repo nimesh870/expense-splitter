@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button"
 import {
   Plus,
   Users,
-  Wallet,
   ArrowUpRight,
   ArrowDownLeft,
   Receipt,
@@ -13,11 +12,10 @@ import { Lock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useDispatch } from "react-redux"
 import { useEffect , useState } from "react"
-import { fetchGroups } from "../features/groupSlice"
-import { createNewGroup } from '../features/groupSlice'
+import { fetchGroups , createNewGroup , setCurrentGroup} from "../features/groupSlice"
 import { useForm } from "react-hook-form"
-import { setCurrentGroup } from "../features/groupSlice"
 import { useNavigate } from "react-router-dom"
+
 
 function Home() {
 
@@ -28,6 +26,7 @@ function Home() {
   const { register , handleSubmit , reset } = useForm()
   const navigate = useNavigate()
   const user = useSelector(state => state.auth.userData)
+  const { expenses } = useSelector(state => state.expenses)
 
   useEffect( () => {
     dispatch(fetchGroups())
@@ -104,17 +103,19 @@ function Home() {
 
         {/* stats cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-5 flex items-center gap-4">
-            <div className="shrink-0 size-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-              <ArrowDownLeft className="size-5 text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-[#94A3B8] text-xs font-medium uppercase tracking-wider">
-                You are owed
-              </p>
-              <p className="text-lg font-bold text-emerald-400">$0.00</p>
-            </div>
-          </div>
+                <div className="bg-[#1E293B] border border-white/5 
+                  rounded-2xl p-5 flex items-center gap-4">
+                  <div className="shrink-0 size-12 rounded-xl bg-emerald-500/10 
+                  flex items-center justify-center">
+                      <ArrowDownLeft className="size-5 text-emerald-400" />
+                  </div>
+                  <div>
+                      <p className="text-[#94A3B8] text-xs font-medium uppercase tracking-wider">
+                          You are owed
+                      </p>
+                      <p className="text-lg font-bold text-emerald-400">$0.00</p>
+                  </div>
+                  </div>
 
           <div className="bg-[#1E293B] border border-white/5 rounded-2xl p-5 flex items-center gap-4">
             <div className="shrink-0 size-12 rounded-xl bg-rose-500/10 flex items-center justify-center">
@@ -202,15 +203,6 @@ function Home() {
               </form>
           )
         }
-
-          <Button
-            variant="outline"
-            className="border-white/10 text-black hover:bg-white/5 
-            hover:text-[#F8FAFC] cursor-pointer rounded-xl gap-2 h-10 px-5"
-          >
-            <Wallet className="size-4" />
-            Settle Up
-          </Button>
         </div>
 
         {/* Main Grid */}

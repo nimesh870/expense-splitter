@@ -24,7 +24,7 @@ const calculateBalances = (expenses , currentUserId) => {
     const paidBy = expense.paid_by
 
     expense.expense_splits.forEach( (split) => {
-      const userId = split.user_id
+      const userId = split.user_id // who this split belongs to
       const amount = split.amount
 
       if (userId === paidBy) return
@@ -175,15 +175,6 @@ export default function GroupDetails() {
            >
             <Plus className="size-4" />
             Add Expense
-          </Button>
-
-          <Button
-            variant="outline"
-            className="border-white/10 text-black hover:bg-white/5
-             hover:text-white cursor-pointer rounded-xl gap-2 h-10 px-5"
-          >
-            <DollarSign className="size-4" />
-            Settle Up
           </Button>
         </div>
 
