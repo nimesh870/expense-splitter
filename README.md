@@ -422,33 +422,6 @@ npm run test:coverage
 
 ---
 
-## 📈 Development Roadmap
-
-### Phase 1: MVP (Week 1-4) ✅ In Progress
-- [x] Setup project structure
-- [x] UI design with shadcn/ui
-- [ ] Create all pages
-- [ ] Setup Redux state
-- [ ] Add React Router
-
-### Phase 2: Backend (Week 5-6) ⏳ Planned
-- [ ] Setup Express server
-- [ ] Create API endpoints
-- [ ] Setup MongoDB
-- [ ] Implement authentication
-
-### Phase 3: Features (Week 7-8) ⏳ Planned
-- [ ] Payment integration
-- [ ] Email notifications
-- [ ] Receipt OCR
-- [ ] Export functionality
-
-### Phase 4: Polish (Week 9+) ⏳ Planned
-- [ ] Performance optimization
-- [ ] Bug fixes
-- [ ] Mobile responsiveness
-- [ ] Production deployment
-
 ---
 
 ## 🎓 What I'm Learning
@@ -485,16 +458,6 @@ Since this is a learning project, contributions and feedback are welcome!
 3. Commit changes (`git commit -m 'Add amazing feature'`)
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
----
-
-## 🐛 Known Issues
-
-- [ ] Mobile layout needs refinement on small screens
-- [ ] Form validation messages could be more helpful
-- [ ] Performance: Large expense lists need pagination
-- [ ] Backend API not yet implemented
-
 ---
 
 ## 📝 License
@@ -517,18 +480,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Questions or feedback?**
 - Open an issue on GitHub
-- Reach out on Twitter: [@yourhandle](https://twitter.com)
-- Email: your.email@example.com
-
----
-
-## 🚀 Next Steps
-
-1. **Build the UI** - Copy-paste shadcn components for all pages
-2. **Setup Routing** - Connect pages with React Router
-3. **Add Redux** - Integrate state management
-4. **Build Backend** - Create Express API
-5. **Deploy** - Ship to Vercel + Render
+- Email: nimeshdulal870@gmail.com
 
 **Status:** Building in public 👀
 
