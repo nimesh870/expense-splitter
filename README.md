@@ -4,7 +4,6 @@
 
 Split expenses among friends, roommates, and travel groups with instant balance calculations and settlement tracking.
 
-![Status](https://img.shields.io/badge/status-In%20Development-yellow)
 ![Version](https://img.shields.io/badge/version-0.1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
